@@ -1,0 +1,27 @@
+- name: Create VMs
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  hosts: local
+  become: yes
+  roles:
+    - { role: create_vm, vm_name: master-1, vm_ram: 2048, vm_index: 0 }
+  tasks:
+    - name: Add workers
+      with_sequence: count=2
+      include_role:
+        name: create_vm
+      vars:
+        vm_name: "worker-{{ '%d'|format(item|int) }}"
+        vm_index: "{{ '%d'|format(item|int) }}"
+
+- name: Configure Hosts
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  hosts: master:workers
+  become: yes
+  roles:
+    - configure_host
+    - configure_k8s
+      

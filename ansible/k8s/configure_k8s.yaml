@@ -1,0 +1,8 @@
+- name: Configure Hosts
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  hosts: master:workers
+  become: yes
+  roles:
+    - configure_k8s

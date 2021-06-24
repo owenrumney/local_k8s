@@ -1,0 +1,15 @@
+---
+ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+ansible_become: true
+ansible_become_password: "{{ kubernetes_ansible_password }}"
+
+source_image_root: /home/owen/code/k8s/images
+base_image_name: focal-server-cloudimg-amd64.img
+base_image_path: "{{ source_image_root }}/{{ base_image_name }}"
+
+target_image_root: /var/lib/libvirt/images
+
+kubernetes_ansible_user: "{{ lookup('env', 'ANSIBLE_USER')|default('k8s') }}"
+kubernetes_ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD')|default('ubuntu') }}"
+kubernetes_become_password: "{{ kubernetes_ansible_password }}"
+

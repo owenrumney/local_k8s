@@ -1,0 +1,107 @@
+---
+- name: wait for ssh connection
+  wait_for_connection:
+    timeout: "300"
+
+- name: Add IP address of all hosts to all hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  with_items: "{{ groups.all }}"
+
+- name: Run an apt update
+  apt: 
+    name: "*"
+    state: latest
+
+- name: add apt-key
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  with_items:
+  - https://download.docker.com/linux/ubuntu/gpg
+  - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add specified repository into sources list using specified filename
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+    filename: google-chrome
+
+- name: upload the sources file
+  copy:
+    src: files/kubernetes.list
+    dest: /etc/apt/sources.list.d/kubernetes.list
+
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: "yes"
+    update_cache: yes
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+  - git
+  - vim
+  - curl
+  - wget
+  - kubelet
+  - kubeadm
+  - kubectl
+  - software-properties-common 
+  - apt-transport-https 
+  - ca-certificates
+  - containerd.io
+
+- name: disable swap sed
+  command: 
+    cmd: sed -i '/ swap / s/*\(.*\)$/#\1/g' /etc/fstab
+
+- name: disable swap now
+  command:
+    cmd: swapoff -a
+
+- name: Configure systemctl
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - overlay
+  - br_netfilter
+
+- name: upload the config file
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+  - { src: files/kubernetes.conf, dest: /etc/sysctl.d/kubernetes.conf }
+  - { src: files/containerd.conf, dest: /etc/modules-load.d/container.conf }
+
+
+- name: Reload sysctl
+  command:
+    cmd: sysctl --system
+
+- name: remove the config file for containerd
+  file:
+    state: "absent"
+    path: "/etc/containerd/config.toml"
+
+- name: restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+
+- name: enable kubelet
+  systemd:
+    name: kubelet
+    enabled: yes  
+
+- name: Reboot servers
+  reboot:

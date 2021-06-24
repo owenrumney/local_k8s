@@ -1,0 +1,57 @@
+---
+- name: wait for ssh connection
+  wait_for_connection:
+    timeout: 300
+    
+- name: Pull config images
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubeadm config images pull
+
+- name: Generate kubeadm token
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubeadm token generate
+  register: kubeadm_token
+
+- name: Initialise cluster
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubeadm init  --apiserver-advertise-address={{ ansible_default_ipv4.address }}  --control-plane-endpoint={{ ansible_hostname }} --token {{ kubeadm_token.stdout }}
+  ignore_errors: yes
+
+- name: Generate worker join command
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubeadm token create --print-join-command
+  register: kubeadm_join_command
+
+- name: Join workers to cluster
+  when: inventory_hostname in groups['workers']
+  command:
+    cmd: "{{ hostvars[groups['master'][0]]['kubeadm_join_command'].stdout}}"
+  ignore_errors: yes
+
+- name: Copy the config
+  when: inventory_hostname in groups['master']
+  file:
+    path: ~/.kube
+    state: directory
+
+- name: Copy the config
+  when: inventory_hostname in groups['master']
+  copy: 
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    remote_src: yes
+    owner: k8s
+
+- name: Install calico
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+- name: Test cluster
+  when: inventory_hostname in groups['master']
+  command:
+    cmd: kubectl apply -f https://k8s.io/examples/pods/commands.yaml

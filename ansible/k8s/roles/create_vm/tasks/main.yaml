@@ -1,0 +1,61 @@
+---
+- name: Stop VM if running
+  virt: 
+    name: "{{ vm_name }}"
+    command: destroy
+  ignore_errors: yes
+
+- name: Destroy VM 
+  virt:
+    name: "{{ vm_name }}"
+    command: undefine
+  ignore_errors: yes
+  
+- name: Copy Base Cloud Image
+  command:
+    cmd: "qemu-img convert -f qcow2 {{ base_image_path }} {{ target_image_root }}/{{ vm_name }}.img"
+  delegate_to: localhost
+
+- name: Resize Base Cloud Image
+  command:
+    cmd: "qemu-img resize {{ target_image_root }}/{{ vm_name }}.img 10G"
+  delegate_to: localhost
+
+- name: Create Network config file
+  template:
+   src: templates/network-config-v2.template.yaml 
+   dest: "{{ target_image_root }}/{{ vm_name }}-network-config.yaml"
+  delegate_to: localhost
+
+- name: Create cloud config file
+  template:
+   src: templates/cloud-config.j2 
+   dest: "{{ target_image_root }}/{{ vm_name }}-cloud-config"
+  delegate_to: localhost
+
+- name: Create Cloud Config file
+  command:
+    cmd: |
+      cloud-localds -v 
+      --hostname="{{ vm_name }}"
+      --network-config="{{ target_image_root }}/{{ vm_name }}-network-config.yaml"
+      "{{ target_image_root }}/{{ vm_name }}_config.img" 
+      "{{ target_image_root }}/{{ vm_name }}-cloud-config"
+  delegate_to: localhost
+
+- name: Create VM
+  command:
+     cmd: |
+      virt-install --name "{{ vm_name }}"
+      --memory "{{ vm_ram|default('2048') }}" 
+      --disk "/var/lib/libvirt/images/{{ vm_name }}.img,size=30,device=disk,bus=virtio" 
+      --disk "/var/lib/libvirt/images/{{ vm_name }}_config.img,device=cdrom" 
+      --os-type linux 
+      --os-variant ubuntu20.04 
+      --network network=host-bridge
+      --graphics none 
+      --noautoconsole 
+      --virt-type kvm 
+      --import
+  delegate_to: localhost
+

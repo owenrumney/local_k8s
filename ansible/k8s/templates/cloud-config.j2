@@ -1,0 +1,9 @@
+#cloud-config
+users:
+  - default
+  - name: k8s
+    groups: wheel, sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMmV3AKQA5GQ0OIcWxQyzaP33N3NSesIRTfWgY/hvGBLk7k+SI4dZrUw8NMhOu2vqiPphO0fm8YmBLEBZ960AnFsdrQiVuyrT2SmxLYzfmYA3ZiXGd5bO9IJHFRPkzHL80RnyyGiuvSbKTonuqxm/KdB/1snmbTQhtiSg4OaJMazldpPsHBjuJGpBhIuKc4FpzWT+q/Brnn9JPPWryZQ8osTO7MbQXzgYRZfBcBRJf9VN+X69ULEWxBhlEuediIxmtrPTNxYbtF+S0Bh8YjKEZHacOIxNnSpBAzbV1gy7aPXJzZggvv3EgnvurYXPgNP37V0MQpfSyhQRKuBOYPMITFb0PbwKSB8DqCj2dL0pm2vfBWYZA+u+u501xGKTAq50G4PEMpyUiEmek6KnoXJWsTT8X7UucvOvrEviwYv1lO2gdAAGVw4BQkK5kzienjFr8RgEWhSmi02+o3cheh2DWfGe7TIKtcbFukP7sTRE+wnL55oQVJoyw8Tj+Z+mUm+8= owen@bigboy

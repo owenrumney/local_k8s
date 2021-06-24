@@ -1,0 +1,24 @@
+---
+master:
+  hosts:
+    master-1:
+      ansible_host: 192.168.0.150
+  vars:
+    ansible_user: k8s
+    private_key: /home/owen/.ssh/id_rsa
+
+
+workers:
+  hosts:
+    worker-1:
+      ansible_host: 192.168.0.151
+    worker-2:
+      ansible_host: 192.168.0.152
+  vars:
+    ansible_user: k8s
+    private_key: /home/owen/.ssh/id_rsa
+
+local:
+  hosts:
+    localhost:
+      ansible_host: 127.0.0.1
