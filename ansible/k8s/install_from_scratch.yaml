@@ -8,7 +8,7 @@
     - { role: create_vm, vm_name: master-1, vm_ram: 2048, vm_index: 0 }
   tasks:
     - name: Add workers
-      with_sequence: count=2
+      with_sequence: count={{ worker_count }}
       include_role:
         name: create_vm
       vars:
@@ -17,6 +17,7 @@
 
 - name: Configure Hosts
   gather_facts: yes
+  remote_user: k8s
   vars:
     ansible_python_interpreter: /usr/bin/python3
   hosts: master:workers

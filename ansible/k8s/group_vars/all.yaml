@@ -13,3 +13,4 @@ kubernetes_ansible_user: "{{ lookup('env', 'ANSIBLE_USER')|default('k8s') }}"
 kubernetes_ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD')|default('ubuntu') }}"
 kubernetes_become_password: "{{ kubernetes_ansible_password }}"
 
+worker_count: 3 # when updating this number remember to update the inventory

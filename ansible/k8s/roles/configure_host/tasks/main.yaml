@@ -3,14 +3,6 @@
   wait_for_connection:
     timeout: "300"
 
-- name: Add IP address of all hosts to all hosts
-  lineinfile:
-    dest: /etc/hosts
-    regexp: '.*{{ item }}$'
-    line: "{{ hostvars[item].ansible_host }} {{item}}"
-    state: present
-  with_items: "{{ groups.all }}"
-
 - name: Run an apt update
   apt: 
     name: "*"
