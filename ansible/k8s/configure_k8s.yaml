@@ -3,6 +3,7 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
   hosts: master:workers
+  remote_user: k8s
   become: yes
   roles:
     - configure_k8s

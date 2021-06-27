@@ -2,7 +2,18 @@
 - name: wait for ssh connection
   wait_for_connection:
     timeout: 300
-    
+
+- name: add master to hosts
+  lineinfile:
+    path: /etc/hosts
+    line: 192.168.0.150 master-1 
+
+- name: add workers to hosts
+  lineinfile:
+    path: /etc/hosts
+    line: 192.168.0.15{{ item }} worker-{{ item }}
+  with_sequence: count={{ worker_count }}
+
 - name: Pull config images
   when: inventory_hostname in groups['master']
   command:
@@ -26,32 +37,48 @@
     cmd: kubeadm token create --print-join-command
   register: kubeadm_join_command
 
-- name: Join workers to cluster
-  when: inventory_hostname in groups['workers']
-  command:
-    cmd: "{{ hostvars[groups['master'][0]]['kubeadm_join_command'].stdout}}"
-  ignore_errors: yes
 
 - name: Copy the config
   when: inventory_hostname in groups['master']
   file:
-    path: ~/.kube
+    path: /home/k8s/.kube
     state: directory
 
 - name: Copy the config
   when: inventory_hostname in groups['master']
   copy: 
     src: /etc/kubernetes/admin.conf
-    dest: ~/.kube/config
+    dest: /home/k8s/.kube/config
     remote_src: yes
     owner: k8s
 
-- name: Install calico
+- name: Copy the config to local machine
   when: inventory_hostname in groups['master']
+  fetch: 
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/virtconfig
+    owner: k8s
+
+- name: Install network
+  when: inventory_hostname in groups['master']
+  become: yes
+  become_user: k8s
   command:
     cmd: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
+- name: Wait for cluster to stabilise
+  pause:
+    minutes: "1"
+
+- name: Join workers to cluster
+  when: inventory_hostname in groups['workers']
+  command:
+    cmd: "{{ hostvars[groups['master'][0]]['kubeadm_join_command'].stdout}}"
+  ignore_errors: yes
+
 - name: Test cluster
   when: inventory_hostname in groups['master']
+  become: yes
+  become_user: k8s
   command:
     cmd: kubectl apply -f https://k8s.io/examples/pods/commands.yaml
