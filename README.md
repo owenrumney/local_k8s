@@ -40,3 +40,37 @@ sudo iptables -I FORWARD -o br0 -j ACCEPT
 
 Make sure that the vars in `ansible/k8s/group_vars/all.yaml` are correct, paying attention to paths and worker counts.
 
+```shell
+
+cd ansible/k8s
+
+export ANSIBLE_PASSWORD=<yourpassword>
+
+ansible-playbook -i inventories/hosts.ini install_from_scratch.yaml
+
+```
+
+### Kubectl
+
+As part of the process, the kube config will be pulled back to your machine and put into the folder `~/.kube/virtconfig/<masterHostName>/etc/kubernetes/admin.conf` to protect any existing config you have. To use the virt cluster, export KUBECONFIG 
+
+```shell
+export KUBECONFIG=~/.kube/virtconfig/192.168.0.150/etc/kubernetes/admin.conf
+```
+
+Now you can use `kubectl` to interact with the cluster
+
+### Destroying the cluster
+
+```shell
+virsh
+
+destroy list
+
+destroy master-1
+destroy worker-1
+destroy worker-2
+destroy worker-3
+...etc...
+exit
+```

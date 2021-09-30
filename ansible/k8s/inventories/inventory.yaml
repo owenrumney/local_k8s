@@ -7,10 +7,8 @@ master:
     ansible_user: k8s
     private_key: /home/owen/.ssh/id_rsa
 
-
 workers:
   hosts:
-
   vars:
     ansible_user: k8s
     private_key: /home/owen/.ssh/id_rsa

@@ -6,7 +6,7 @@
 - name: add master to hosts
   lineinfile:
     path: /etc/hosts
-    line: 192.168.0.150 master-1 
+    line: 192.168.0.150 master-1
 
 - name: add workers to hosts
   lineinfile:
@@ -37,7 +37,6 @@
     cmd: kubeadm token create --print-join-command
   register: kubeadm_join_command
 
-
 - name: Copy the config
   when: inventory_hostname in groups['master']
   file:
@@ -46,7 +45,7 @@
 
 - name: Copy the config
   when: inventory_hostname in groups['master']
-  copy: 
+  copy:
     src: /etc/kubernetes/admin.conf
     dest: /home/k8s/.kube/config
     remote_src: yes
@@ -54,7 +53,7 @@
 
 - name: Copy the config to local machine
   when: inventory_hostname in groups['master']
-  fetch: 
+  fetch:
     src: /etc/kubernetes/admin.conf
     dest: ~/.kube/virtconfig
     owner: k8s
@@ -68,7 +67,7 @@
 
 - name: Wait for cluster to stabilise
   pause:
-    minutes: "1"
+    minutes: 1
 
 - name: Join workers to cluster
   when: inventory_hostname in groups['workers']
@@ -82,3 +81,8 @@
   become_user: k8s
   command:
     cmd: kubectl apply -f https://k8s.io/examples/pods/commands.yaml
+
+- name: Print KubeConfig export message
+  when: inventory_hostname in groups['master']
+  debug:
+    msg: "export KUBECONFIG=~/.kube/virtconfig/{{ inventory_hostname}}/etc/kubernetes/admin.conf"
