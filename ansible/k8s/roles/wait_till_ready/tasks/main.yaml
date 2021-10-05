@@ -1,0 +1,4 @@
+---
+- name: wait for ssh connection
+  wait_for_connection:
+    timeout: "300"

@@ -2,7 +2,7 @@
 
 ## Bridge network
 
-Create a netplan bridge pointing to the physical interface
+Create a netplan bridge pointing to the physical interface, this will go into `/etc/netplan/01_kvm_bridge.yaml`
 
 ```yaml
 network:
@@ -26,6 +26,10 @@ network:
             dhcp4: no
             dhcp6: no
 ```
+
+Now generate with `sudo netplan generate`
+
+Now apply with `sudo netplan apply`
 
 ## Host IP Tables
 
@@ -63,14 +67,7 @@ Now you can use `kubectl` to interact with the cluster
 ### Destroying the cluster
 
 ```shell
-virsh
+virsh destroy master-1 && virsh undefine master-1
 
-destroy list
-
-destroy master-1
-destroy worker-1
-destroy worker-2
-destroy worker-3
-...etc...
-exit
+for i in {1-3}; do virsh destroy worker-$i && virsh undefine worker-$i; done
 ```
