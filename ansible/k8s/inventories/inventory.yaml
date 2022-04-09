@@ -5,13 +5,13 @@ master:
       ansible_host: 192.168.0.150
   vars:
     ansible_user: k8s
-    private_key: /home/owen/.ssh/id_rsa
+    private_key: {{ private_key_path }}
 
 workers:
   hosts:
   vars:
     ansible_user: k8s
-    private_key: /home/owen/.ssh/id_rsa
+    private_key: {{ private_key_path }}
 
 local:
   hosts:

@@ -1,5 +1,13 @@
 # Notes
 
+## Local changes required
+
+The following changes are required in the in `ansible/k8s/group_vars/all.yaml`
+
+- `base_path` - set this to the path of the project
+- `public_key_portion` - the public part of the shh keypair
+- `private_key_path` - the path the the private portion of the ssh keypair
+
 ## Bridge network
 
 Create a netplan bridge pointing to the physical interface, this will go into `/etc/netplan/01_kvm_bridge.yaml`
