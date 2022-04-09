@@ -1,5 +1,4 @@
-
-
+---
 - name: Run an apt update
   apt: 
     name: "*"
