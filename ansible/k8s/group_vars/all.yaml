@@ -3,7 +3,11 @@ ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
 ansible_become: true
 ansible_become_password: "{{ kubernetes_ansible_password }}"
 
-source_image_root: /home/owen/code/k8s/images
+# change this for the location your running
+base_path: /home/owen/code/github/owenrumney/local_k8s/
+
+
+source_image_root: "{{ base_path }}/images"
 base_image_name: focal-server-cloudimg-amd64.img
 base_image_path: "{{ source_image_root }}/{{ base_image_name }}"
 

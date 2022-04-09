@@ -1,0 +1,29 @@
+---
+- name: Add master to hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "192.168.0.150 master-1"
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+  - qemu-kvm 
+  - libvirt-daemon-system 
+  - libvirt-clients 
+  - bridge-utils 
+  - virtinst 
+  - virt-manager 
+  - cloud-image-utils
+  
+- name: Remove the virtual network
+  command:
+    cmd: virsh net-destroy host-bridge
+  ignore_errors: yes
+
+- name: Create the virtual network
+  command:
+    cmd: "virsh net-create {{ base_path }}/ansible/k8s/files/host-bridge.xml"
+  ignore_errors: yes

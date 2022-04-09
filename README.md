@@ -14,7 +14,7 @@ network:
             dhcp6: false
     bridges:
         bro0:
-            interfaces: [ enp39s0 ]
+            interfaces: [ enp39s0 ] # the interface on your machine
             addresses: [ 192.168.0.100/24 ]
             gateway4: 192.168.0.1
             mtu: 1500
@@ -35,30 +35,33 @@ Now apply with `sudo netplan apply`
 
 Some changes to host IP tables to route traffic from guest to internet correctly
 
-```shell
+```bash
 sudo iptables -I FORWARD -i br0 -j ACCEPT
 sudo iptables -I FORWARD -o br0 -j ACCEPT
 ```
+
+### Downloading the image
+
+Run `images/get_focal_image.sh` to download the ubuntu image locally
+
 
 ### Running from scratch
 
 Make sure that the vars in `ansible/k8s/group_vars/all.yaml` are correct, paying attention to paths and worker counts.
 
-```shell
-
+```bash
 cd ansible/k8s
 
 export ANSIBLE_PASSWORD=<yourpassword>
 
 ansible-playbook -i inventories/hosts.ini install_from_scratch.yaml
-
 ```
 
 ### Kubectl
 
-As part of the process, the kube config will be pulled back to your machine and put into the folder `~/.kube/virtconfig/<masterHostName>/etc/kubernetes/admin.conf` to protect any existing config you have. To use the virt cluster, export KUBECONFIG 
+As part of the process, the kube config will be pulled back to your machine and put into the folder `~/.kube/virtconfig/<masterHostName>/etc/kubernetes/admin.conf` to protect any existing config you have. To use the virt cluster, `export KUBECONFIG `
 
-```shell
+```bash
 export KUBECONFIG=~/.kube/virtconfig/192.168.0.150/etc/kubernetes/admin.conf
 ```
 
@@ -66,7 +69,7 @@ Now you can use `kubectl` to interact with the cluster
 
 ### Destroying the cluster
 
-```shell
+```bash
 virsh destroy master-1 && virsh undefine master-1
 
 for i in {1-3}; do virsh destroy worker-$i && virsh undefine worker-$i; done

@@ -1,3 +1,9 @@
+- name: Configure KVM Host
+  become: yes
+  hosts: local
+  roles:
+    - prepare_kvm
+
 - name: Create VMs
   gather_facts: no
   vars:

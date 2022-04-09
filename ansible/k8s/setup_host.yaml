@@ -1,0 +1,5 @@
+- name: Configure Hosts
+  become: yes
+  hosts: local
+  roles:
+    - prepare_kvm
