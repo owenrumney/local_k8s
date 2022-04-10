@@ -1,0 +1,12 @@
+---
+- name: Stop VM if running
+  virt: 
+    name: "{{ vm_name }}"
+    command: destroy
+  ignore_errors: yes
+
+- name: Destroy VM 
+  virt:
+    name: "{{ vm_name }}"
+    command: undefine
+  ignore_errors: yes
