@@ -1,14 +1,21 @@
 # Notes
 
+## Assumptions
+
+The following assumptions have been made
+
+- you have ansible installed
+- you have got sshd running and can ssh to the localhost
+
 ## Local changes required
 
 The following changes are required in the in `ansible/k8s/group_vars/all.yaml`
 
-- `base_path` - set this to the path of the project
-- `public_key_portion` - the public part of the shh keypair
 - `private_key_path` - the path the the private portion of the ssh keypair
 
 ## Bridge network
+
+> I've used netplan for my  bridge, other approaches are available but you'll need to use their own instructions
 
 Create a netplan bridge pointing to the physical interface, this will go into `/etc/netplan/01_kvm_bridge.yaml`
 
@@ -21,7 +28,7 @@ network:
             dhcp4: false
             dhcp6: false
     bridges:
-        bro0:
+        br0:
             interfaces: [ enp39s0 ] # the interface on your machine
             addresses: [ 192.168.0.100/24 ]
             gateway4: 192.168.0.1
@@ -50,7 +57,7 @@ sudo iptables -I FORWARD -o br0 -j ACCEPT
 
 ### Downloading the image
 
-Run `images/get_focal_image.sh` to download the ubuntu image locally
+Run `images/get_focal_image.sh` to download the ubuntu image locally. You'lll need this as the base image of the nodes.
 
 
 ### Running from scratch
@@ -74,6 +81,10 @@ export KUBECONFIG=~/.kube/virtconfig/192.168.0.150/etc/kubernetes/admin.conf
 ```
 
 Now you can use `kubectl` to interact with the cluster
+
+### Accessing the master
+
+The master node can be accessed using now with `ssh k8s@master-1`
 
 ### Destroying the cluster
 

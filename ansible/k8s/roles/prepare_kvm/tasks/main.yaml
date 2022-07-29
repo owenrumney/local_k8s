@@ -5,18 +5,18 @@
     line: "192.168.0.150 master-1"
 
 - name: Install required packages
-  apt:
+  pacman:
     name: "{{ item }}"
     state: present
     update_cache: yes
   with_items:
-  - qemu-kvm 
-  - libvirt-daemon-system 
-  - libvirt-clients 
-  - bridge-utils 
-  - virtinst 
   - virt-manager 
-  - cloud-image-utils
+  - qemu 
+  - vde2 
+  - ebtables 
+  - dnsmasq 
+  - bridge-utils 
+  - openbsd-netcat
   
 - name: Remove the virtual network
   command:
@@ -25,5 +25,5 @@
 
 - name: Create the virtual network
   command:
-    cmd: "virsh net-create {{ base_path }}/ansible/k8s/files/host-bridge.xml"
+    cmd: "virsh net-create {{ playbook_dir }}/files/host-bridge.xml"
   ignore_errors: yes

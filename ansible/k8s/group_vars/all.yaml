@@ -5,8 +5,8 @@ ansible_become_password: "{{ kubernetes_ansible_password }}"
 
 # CHANGE THESE FOR LOCAL
 base_path: /home/owen/code/github/owenrumney/local_k8s/
-public_key_portion: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDPmct5vEqIyurFAMsZL6uEgkDyQ+EbnNOabjOobxm1qhcnkcpIU/lJwG+YdOvxfVNBgKGjawEXcoO+jCc1kNP2fQroCE0DW25KJXlBDt+b8aip7y0I6zZK09gVIqKVL5NYHAF15JL3G5kbqJUE1YwDQ1MQH7doESWZIAU1701exqb6bu+QJEf/Uipu+sQdpmLYwkM2QeBIxNKM16groxfjbScLvJ8WxoiNoSq7UpsFMGHEieermgoy7SN3kYT8Z3u7DpiggmQ4ZNlFHg//rST+Ypr8JiXKCsIAeKzv5xxWXDymubf4ZZCvjl3d316N76uFbwhpiCbskFoWTvER4E2lNEo6Y9ZzSwVguSj+q0OIlInNd6/816FSOFWpWH0N0cussFMg0no3xQvx0SloKYDaodl57CtdxC93f8K++5Sa7mkxW2/VNV/vU0Ur0QhmoxROQT3NbkfNeIcEGYzZdsCqtmX0nZ/+gF84XaFYtGYqS1t2Ew330wxZN3QJ0i3/R/U= owen@gaming
-private_key_path: /home/owen/.ssh/id_rsa
+private_key_path: /home/owen/.ssh/id_ed25519
+public_key_path: "{{ private_key_path }}.pub"
 
 source_image_root: "{{ base_path }}/images"
 base_image_name: focal-server-cloudimg-amd64.img

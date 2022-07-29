@@ -6,4 +6,4 @@ users:
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh-authorized-keys:
-      - {{ public_key_portion }}
+      - {{ lookup('ansible.builtin.file', public_key_path ) }}
