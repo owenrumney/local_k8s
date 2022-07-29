@@ -4,11 +4,10 @@ ansible_become: true
 ansible_become_password: "{{ kubernetes_ansible_password }}"
 
 # CHANGE THESE FOR LOCAL
-base_path: /home/owen/code/github/owenrumney/local_k8s/
-private_key_path: /home/owen/.ssh/id_ed25519
+private_key_path: /home/{{ lookup('env', 'USER') }}/.ssh/id_ed25519
 public_key_path: "{{ private_key_path }}.pub"
 
-source_image_root: "{{ base_path }}/images"
+source_image_root: "{{ playbook_dir }}/../../images"
 base_image_name: focal-server-cloudimg-amd64.img
 base_image_path: "{{ source_image_root }}/{{ base_image_name }}"
 
